@@ -1,0 +1,266 @@
+{
+  "name": "interactive-git-hooks",
+  "displayName": "Interactive Git Hooks",
+  "description": "Visual, interactive git hooks with diff preview and no-code hook creation",
+  "version": "1.0.0",
+  "publisher": "LukhasAI",
+  "icon": "resources/icon.png",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other",
+    "Formatters",
+    "Linters"
+  ],
+  "keywords": [
+    "git",
+    "hooks",
+    "interactive",
+    "validation",
+    "enhancement",
+    "diff",
+    "visual"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "interactiveGitHooks.openPanel",
+        "title": "Open Interactive Hooks",
+        "icon": "$(git-commit)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.runHooks",
+        "title": "Run Git Hooks",
+        "icon": "$(play)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.createHook",
+        "title": "Create New Hook",
+        "icon": "$(add)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.configureHooks",
+        "title": "Configure Hooks",
+        "icon": "$(settings-gear)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.showDiff",
+        "title": "Show Enhanced Diff",
+        "icon": "$(diff)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.acceptAll",
+        "title": "Accept All Changes",
+        "icon": "$(check-all)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.acceptPartial",
+        "title": "Accept Selected Changes",
+        "icon": "$(check)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.decline",
+        "title": "Decline Changes",
+        "icon": "$(close)",
+        "category": "Git Hooks"
+      },
+      {
+        "command": "interactiveGitHooks.editManually",
+        "title": "Manual Edit",
+        "icon": "$(edit)",
+        "category": "Git Hooks"
+      }
+    ],
+    "views": {
+      "scm": [
+        {
+          "id": "interactiveGitHooks",
+          "name": "Interactive Git Hooks",
+          "when": "scmProvider == git",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "interactiveGitHooks",
+          "title": "Interactive Git Hooks",
+          "icon": "$(git-commit)"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "interactiveGitHooks",
+        "contents": "🚀 Welcome to Interactive Git Hooks!\n\nGet started by running hooks on your staged files.\n\n[Run Git Hooks](command:interactiveGitHooks.runHooks)\n\nOr create your own custom hook with our visual builder.\n\n[Create New Hook](command:interactiveGitHooks.createHook)\n\n[Configure Settings](command:interactiveGitHooks.configureHooks)"
+      }
+    ],
+    "configuration": {
+      "title": "Interactive Git Hooks",
+      "properties": {
+        "interactiveGitHooks.defaultMode": {
+          "type": "string",
+          "enum": ["interactive", "auto", "preview", "skip"],
+          "default": "interactive",
+          "description": "Default mode for running hooks"
+        },
+        "interactiveGitHooks.timeout": {
+          "type": "number",
+          "default": 30,
+          "description": "Timeout for user interactions (seconds)"
+        },
+        "interactiveGitHooks.autoBackup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically backup files before modification"
+        },
+        "interactiveGitHooks.enableNotifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notifications for hook results"
+        },
+        "interactiveGitHooks.diffStyle": {
+          "type": "string",
+          "enum": ["side-by-side", "inline", "unified"],
+          "default": "side-by-side",
+          "description": "Diff display style"
+        },
+        "interactiveGitHooks.enabledHooks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["tone", "quality", "security"],
+          "description": "List of enabled hook types"
+        }
+      }
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "interactiveGitHooks.runHooks",
+          "when": "view == interactiveGitHooks",
+          "group": "navigation@1"
+        },
+        {
+          "command": "interactiveGitHooks.createHook",
+          "when": "view == interactiveGitHooks",
+          "group": "navigation@2"
+        },
+        {
+          "command": "interactiveGitHooks.configureHooks",
+          "when": "view == interactiveGitHooks",
+          "group": "navigation@3"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "interactiveGitHooks.showDiff",
+          "when": "view == interactiveGitHooks && viewItem == fileEnhancement",
+          "group": "inline@1"
+        },
+        {
+          "command": "interactiveGitHooks.acceptAll",
+          "when": "view == interactiveGitHooks && viewItem == fileEnhancement",
+          "group": "inline@2"
+        },
+        {
+          "command": "interactiveGitHooks.editManually",
+          "when": "view == interactiveGitHooks && viewItem == fileEnhancement",
+          "group": "inline@3"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "interactiveGitHooks.openPanel",
+          "when": "gitOpenRepositoryCount != 0"
+        }
+      ],
+      "scm/title": [
+        {
+          "command": "interactiveGitHooks.runHooks",
+          "group": "navigation",
+          "when": "scmProvider == git"
+        }
+      ]
+    },
+    "notebooks": [
+      {
+        "type": "interactive-git-hooks",
+        "displayName": "Git Hook Builder",
+        "selector": [
+          {
+            "filenamePattern": "*.hook-builder"
+          }
+        ]
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "interactiveGitHooks.diffEditor",
+        "displayName": "Interactive Diff Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.diff-preview"
+          }
+        ],
+        "priority": "default"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "vsce-package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "20.x",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3",
+    "@vscode/test-electron": "^2.3.8",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "ts-loader": "^9.5.1",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "diff": "^5.1.0",
+    "yaml": "^2.3.1",
+    "simple-git": "^3.19.1",
+    "micromatch": "^4.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LukhasAI/interactive-git-hooks"
+  },
+  "bugs": {
+    "url": "https://github.com/LukhasAI/interactive-git-hooks/issues"
+  },
+  "homepage": "https://github.com/LukhasAI/interactive-git-hooks#readme",
+  "license": "MIT"
+}
