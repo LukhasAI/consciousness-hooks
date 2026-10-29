@@ -1,0 +1,18 @@
+name: Hook installer safety
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed:
+    name: Isolated Git hook installer checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Bash syntax and real preflight
+        run: bash tests/smoke-installer.sh
