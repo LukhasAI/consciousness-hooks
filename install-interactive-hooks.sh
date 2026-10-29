@@ -8,6 +8,13 @@
 
 set -euo pipefail
 
+# The original installer uses associative arrays, unavailable in macOS's
+# system Bash 3.2. Fail with a clear explanation before touching any hooks.
+if (( BASH_VERSINFO[0] < 4 )); then
+    echo 'This experimental installer requires Bash 4+; macOS system Bash 3.2 is unsupported.' >&2
+    exit 2
+fi
+
 # Colors
 RESET='\033[0m'
 RED='\033[0;31m'
@@ -34,6 +41,26 @@ declare -A HOOK_FILES=(
     ["quality"]="code-quality-hook.sh"
     ["security"]="security-validation-hook.sh"
 )
+
+# Fail-safe validation: missing sources must not yield a partial install.
+preflight_sources() {
+    local hook_type source
+    if [[ ! -f "$SCRIPT_DIR/interactive-hook-framework.sh" ]]; then
+        echo "Missing framework: $SCRIPT_DIR/interactive-hook-framework.sh" >&2
+        return 2
+    fi
+    for hook_type in "$@"; do
+        if [[ -z "${HOOK_FILES[$hook_type]+available}" ]]; then
+            echo "Unknown hook type: $hook_type" >&2
+            return 2
+        fi
+        source="$SCRIPT_DIR/${HOOK_FILES[$hook_type]}"
+        if [[ ! -f "$source" ]]; then
+            echo "Missing hook source: $source; no hooks were installed." >&2
+            return 2
+        fi
+    done
+}
 
 # ═══════════════════════════════════════════════════════════════════════════════════
 # Helper Functions
@@ -342,8 +369,11 @@ main() {
         exit 0
     fi
     
+    # Abort before writing anything while promised hook sources are missing.
+    preflight_sources "${!AVAILABLE_HOOKS[@]}" || return 2
+
     # Backup existing hooks
-    backup_existing_hooks
+    backup_existing_hooks || true
     echo ""
     
     # Install the framework
@@ -452,6 +482,12 @@ if [[ "$CONFIG_ONLY" == true ]]; then
 elif [[ "$AUTO_INSTALL" == true ]]; then
     # Automated installation
     check_git_repo
+    # Preflight every selected hook before creating backups, configs or hooks.
+    if [[ -n "$HOOK_TYPE" ]]; then
+        preflight_sources "$HOOK_TYPE" || exit 2
+    else
+        preflight_sources "${!AVAILABLE_HOOKS[@]}" || exit 2
+    fi
     backup_existing_hooks >/dev/null 2>&1 || true
     install_framework
     
